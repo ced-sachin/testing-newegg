@@ -423,6 +423,28 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         
         }
     }
+
+    public function ajaxProcessFetchNeweggRequiredValues() {
+        $root_cat = Tools::getValue('root_cat');
+        $subCatId = Tools::getValue('sub_cat_Id');
+        $variantAttr = Tools::getValue('variantAttr');
+        $values = include '/Users/kavita/www/prestashop/modules/cednewegg/lib/NeweggCategoryPhp/SubCat/SubCatFieldValues/'.$root_cat.'/'.$subCatId.'/'.$variantAttr.'.php';
+        $values =$values['PropertyValueList'];
+        $this->context->smarty->assign(
+            array(
+                'variantValues'=> $values,
+                'variantAttr' => $variantAttr
+            )
+        );
+
+        $content = $this->context->smarty->fetch(
+            _PS_MODULE_DIR_ . 'cednewegg/views/templates/admin/profile/variant_value_mapping.tpl'
+        );
+        die(json_encode(array(
+            'success' => true,
+            'content' => $content
+        )));
+    }
         
     public function ajaxProcessGetRequiredAttributes(){
         $db = Db::getInstance();
@@ -435,6 +457,8 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         }
 
         $accountDetail = $this->getAccountDetails($accountID);
+        $rootCategory = $accountDetail['root_cat'];
+        $rootCategory = str_replace(array('[',']','"'),'',$rootCategory);
         $sub_cat_id = $db->getValue(
             "SELECT `id` from `" . _DB_PREFIX_ . "newegg_attributes` 
                     WHERE `sub_cat_id`='" . pSQL($subcatId) . "'"
@@ -473,15 +497,21 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                 'storeDefaultAttributes' => $storeDefaultAttributes,
                 'storeAttributes' => $storeAttributes,
                 'requiredAttributes' => $requiredsDefaultAttr,
-                'variantAttributes' => $variantAttributes
+                'variantAttributes' => $variantAttributes,
+                'category' => $rootCategory,
+                'subCatId' => $subcatId
             )
         );
         $content = $this->context->smarty->fetch(
             _PS_MODULE_DIR_ . 'cednewegg/views/templates/admin/profile/profile_required_attribute.tpl'
         );
+        $content1 = $this->context->smarty->fetch(
+            _PS_MODULE_DIR_ . 'cednewegg/views/templates/admin/profile/profile_newegg_variants.tpl'
+        );
         die(json_encode(array(
             'success' => true,
-            'content' => $content
+            'content' => $content,
+            'content1' => $content1
         )));
     }
 

@@ -83,34 +83,6 @@
 </tr>   {$count = $count+1}                    
     {/foreach}
 {/if}
-<b>Select Required Variant Attributes</b>
-{if isset($variantAttributes)}
-    {foreach $variantAttributes as $req_attr}
-    <tr>
-        <td>           
-        <input type="text" readonly name="newegg_attributes[{$count}][name]" class="req_attr" value="{$req_attr}">               
-        </td>
-        <td>
-            <select name="newegg_attributes[{$count}][presta_attr_code]" class="newegg-attr-select" onchange="mapVariant(this)">
-                <option value="">--please select--</option>
-               {* <option value="--Set Default Value--">--Set Default Value--</option>
-                <optgroup value="0" label="System (Default)">
-                    {foreach $storeDefaultAttributes as $key => $system_attribute}
-                            <option value="system-{$key|escape:'htmlall':'UTF-8'}">{$system_attribute|escape:'htmlall':'UTF-8'}</option>
-                    {/foreach}                    
-                </optgroup> *}
-                <optgroup value="0" label="Attributes(Variants)">
-                    {foreach $storeAttributes as $store_attribute}
-                            <option value="attribute-{$store_attribute['id_attribute']|escape:'htmlall':'UTF-8'}">{$store_attribute['name']|escape:'htmlall':'UTF-8'}</option>
-                    {/foreach}
-                </optgroup>
-            </select>
-        </td>
-        <td><input style="" name="newegg_attributes[{$count}][variant]" value="Map Value" id="map_value_{$count}" class="btn btn-success"></td>
-
-</tr>   {$count = $count+1}                    
-    {/foreach}
-{/if}
 
 {$count=0}
 <b>Not Required Optional Attributes</b>

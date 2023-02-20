@@ -23,6 +23,11 @@
                             <i class="icon-wrench"></i> {l s='Attribute Mapping' mod='cednewegg'}
                         </a>
                     </li>
+                    <li class="tab-row">
+                        <a class="tab-page" href="#profileVariantAttributes" data-toggle="tab">
+                            <i class="icon-wrench"></i> {l s='Variant Mapping' mod='cednewegg'}
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="tab-content">
@@ -34,6 +39,9 @@
                 </div>
                 <div class="panel tab-pane" id="profileAttributes">
                                 {include file="./profile_attribute_mapping.tpl"}
+                </div>
+                <div class="panel tab-pane" id="profileVariantAttributes">
+                                {include file="./profile_variant_mapping.tpl"}
                 </div>
             </div>
             <input type="hidden" id="token-newegg" value={$currentToken} >
