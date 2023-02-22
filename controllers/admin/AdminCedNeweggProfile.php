@@ -118,7 +118,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                 $error_fields += 1;
             }
             
-            if($error_fields>0){
+            if($error_fields>0) {
                 $this->errors[] = "Please fill required filled !!";
             }else{
 
