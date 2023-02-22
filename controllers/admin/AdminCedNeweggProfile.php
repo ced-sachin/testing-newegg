@@ -118,7 +118,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                 $error_fields += 1;
             }
             
-            if($error_fields>0){
+            if($error_fields>0) {
                 $this->errors[] = "Please fill required filled !!";
             }else{
 
@@ -126,6 +126,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                 $profile_req_opt_attribute = array();
                 $profile_req_opt_attribute[0] = $profileData['newegg_attributes'];
                 $profile_req_opt_attribute[1] = $profileData['newegg_opt_attributes'];
+                $profile_var_attribute = $profileData['newegg_var_attributes'];
                 $res = $db->update(
                     'newegg_profile',
                     array(
@@ -134,6 +135,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                         'profile_name' => pSQL($profileData['profileTitle']),
                         'profile_category' => pSQL(($profileData['profileCategory'])),
                         'profile_req_opt_attribute' => pSQL(json_encode($profile_req_opt_attribute)),
+                        'profile_var_attribute' => pSQL(json_encode($profile_var_attribute)), 
                         'account_id' => pSQL($profileData['accountSelect']),
                     ),
                     'id=' . (int)$profileId
@@ -149,7 +151,8 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                 );
                 if (!$a_code) {
                     $profile_req_opt_attribute[0] = $profileData['newegg_attributes'];
-                    $profile_req_opt_attribute[1] = $profileData['newegg_opt_attributes'];  
+                    $profile_req_opt_attribute[1] = $profileData['newegg_opt_attributes']; 
+                    $profile_var_attribute = $profileData['newegg_var_attributes']; 
                     $res = $db->insert(
                         'newegg_profile',
                         array(
@@ -158,6 +161,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                             'profile_name' => pSQL($profileData['profileTitle']),
                             'profile_category' => pSQL(($profileData['profileCategory'])),
                             'profile_req_opt_attribute' => pSQL(json_encode($profile_req_opt_attribute)),
+                            'profile_var_attribute' => pSQL(json_encode($profile_var_attribute)),
                             'account_id' => pSQL($profileData['accountSelect'])
                             // 'store_id' => pSQL($profileData['store_id'])
                         )
@@ -241,6 +245,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
                 'profile_name' => '',
                 'profile_category' => '',
                 'profile_req_opt_attribute' => '',
+                'profile_var_attribute' => '',
                 'account_id' => '',
                 'profileCat'=> ''
         );
@@ -277,6 +282,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         $profileData['profile_name'] = isset($data['profile_name']) ? $data['profile_name'] : '';
         $profileData['profile_category'] = isset($data['profile_category']) ? $data['profile_category'] : '';
         $profileData['profile_req_opt_attribute'] = isset($data['profile_req_opt_attribute']) ? $data['profile_req_opt_attribute'] : '';
+        $profileData['profile_var_attribute'] = isset($data['profile_var_attribute']) ? $data['profile_var_attribute'] : '';
         $profileData['account_id'] = isset($data['account_id']) ? $data['account_id'] : '';
         $profileData['profileCat'] = isset($profileCat) ? $profileCat : '';        
         
@@ -289,6 +295,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
             'profile_name' =>$profileData['profile_name'],
             'profile_category' =>$profileData['profile_category'],
             'profile_req_opt_attribute' =>json_decode($profileData['profile_req_opt_attribute'], true),
+            'profile_var_attribute' =>json_decode($profileData['profile_var_attribute'], true),
             'account_id' =>$profileData['account_id'],
             'profileCat' => $profileCat,
             'storeDefaultAttributes' => $storeDefaultAttributes,
@@ -296,7 +303,9 @@ class AdminCedNeweggProfileController extends ModuleAdminController
             'requiredAttributes' => $requiredsAttributes,
             'reqAttr' => $reqAttr, 
             'variantAttributes' => $varAttr,
-            'optionalAttrs' => $optAttr
+            'optionalAttrs' => $optAttr,
+            'category' => $root_cat,
+            'subCatId' => $subCatId,
       ));
     }
         parent::renderForm();
@@ -428,7 +437,7 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         $root_cat = Tools::getValue('root_cat');
         $subCatId = Tools::getValue('sub_cat_Id');
         $variantAttr = Tools::getValue('variantAttr');
-        $values = include '/Users/kavita/www/prestashop/modules/cednewegg/lib/NeweggCategoryPhp/SubCat/SubCatFieldValues/'.$root_cat.'/'.$subCatId.'/'.$variantAttr.'.php';
+        $values = include '/var/www/html/prestashop/modules/cednewegg/lib/NeweggCategoryPhp/SubCat/SubCatFieldValues/'.$root_cat.'/'.$subCatId.'/'.$variantAttr.'.php';
         $values =$values['PropertyValueList'];
         $this->context->smarty->assign(
             array(
@@ -446,7 +455,8 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         )));
     }
         
-    public function ajaxProcessGetRequiredAttributes(){
+    public function ajaxProcessGetRequiredAttributes() {
+
         $db = Db::getInstance();
         $accountID = Tools::getValue('newegg_account_id');
         $subcatId = Tools::getValue('newegg_sub_cat');
@@ -466,11 +476,10 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         if (empty($sub_cat_id)) {
             $response = $this->getPropertyList($subcatId, $accountDetail);
           if(!empty($response)){
-            // echo '<pre>'; print_r($response['variant']); die('<br>dxb');
             $res = $db->insert(
                 'newegg_attributes',
                 array(
-                'sub_cat_id' => pSQL($subcatId),//isset($response['subcatPropertyValueResponse']['SubcategoryID']) ? pSQL($response['subcatPropertyValueResponse']['SubcategoryID']):pSQL(''),
+                'sub_cat_id' => pSQL($subcatId),
                 'required_attr' => isset($response['required']) ? pSQL($response['required']):pSQL(''),
                 'variant_attr' => isset($response['variant']) ? pSQL($response['variant']):pSQL(''),
                 'all_attr' => isset($response['all']) ? pSQL($response['all']):pSQL(''),
@@ -482,7 +491,6 @@ class AdminCedNeweggProfileController extends ModuleAdminController
         $sql = "SELECT * from `" . _DB_PREFIX_ . "newegg_attributes` 
         WHERE `sub_cat_id`='" . pSQL($subcatId) . "'";
         $result = $db->executeS($sql);
-        // print_r($results[0]); die;
         $results = $result[0];
         $requiredsattributes = isset($results['required_attr']) ? explode(',', $results['required_attr']):'';
         $variantAttributes = isset($results['variant_attr']) ? explode(',', $results['variant_attr']):'';

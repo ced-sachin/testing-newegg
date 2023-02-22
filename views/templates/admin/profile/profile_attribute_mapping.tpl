@@ -14,15 +14,15 @@
             </div>
         </div>
     </div>
-    <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <td>Newegg Attribute</td>
-                    <td>Store Attributes</td>
-                    <td> Default Value</td>
-                </tr>
-            </thead>
-            <tbody id="attributes-newegg">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td>Newegg Attribute</td>
+            <td>Store Attributes</td>
+            <td>Default Value</td>
+        </tr>   
+    </thead>
+    <tbody id="attributes-newegg">
 <tr class="dynamic-field" id="dynamic-field-default" style="display: none;">
         <td>                        
             <select id="" >
@@ -56,8 +56,8 @@
         
         <td><input type='hidden' ></td>
 </tr>
-            {if isset($profile_req_opt_attribute)}
-                {$count = 0}
+{if isset($profile_req_opt_attribute)}
+    {$count = 0}
 {foreach $profile_req_opt_attribute[0] as $k => $attr}
 <tr>
         <td>

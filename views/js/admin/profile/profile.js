@@ -90,7 +90,7 @@ function getRequiredAttributes(){
                 },
                 success: function (res) {
                     var data = JSON.parse(res);
-                    // console.log(data.content);
+                    //console.log(data.content1);
                     document.getElementById('attributes-newegg').innerHTML = data.content;
                     document.getElementById('variant-attributes-newegg').innerHTML = data.content1;
                 }
@@ -121,6 +121,7 @@ function fetchNeweggCategoryDetails()
             });
 
 }
+
 function mapVariant(variant,category, cat_id, obj) {
   console.log(variant.value);
   console.log(category);
@@ -141,11 +142,7 @@ function mapVariant(variant,category, cat_id, obj) {
         var data = JSON.parse(res);
         console.log(data);
         var targetId = 'variant_'+variant.value;
-         document.getElementById(targetId).innerHTML = data.content;
-        // $("#profile-category").empty();
-        // for(i=0;i<data['newegg_categories'].length;i++){
-        //     $("#profile-category").append(`<option value='${data['newegg_categories'][i]['sub_cat_Id']}:${data['newegg_categories'][i]['sub_cat_name']}'>${data['newegg_categories'][i]['sub_cat_name']}</option>`);
-        // }                  
+         document.getElementById(targetId).innerHTML = data.content;           
     }
 });
 }
